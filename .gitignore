@@ -1,0 +1,6 @@
+*.pcap
+*.cap
+passwords.txt
+credentials.txt
+*.hash
+.env

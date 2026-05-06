@@ -1,0 +1,51 @@
+<!-- Custom Wazuh rules — Home Security Lab -->
+<!-- All rules are tagged with MITRE ATT&CK technique IDs -->
+
+<group name="homelab,">
+
+  <!-- SSH Brute Force — tighter threshold than default -->
+  <rule id="100001" level="12" frequency="5" timeframe="60">
+    <if_matched_sid>5503</if_matched_sid>
+    <same_source_ip/>
+    <description>SSH brute force: $(frequency) failures from $(srcip) in 60 seconds</description>
+    <mitre><id>T1110</id></mitre>
+    <group>brute_force,authentication_failures</group>
+  </rule>
+
+  <!-- FTP anonymous login -->
+  <rule id="100002" level="8">
+    <if_sid>11200</if_sid>
+    <match>anonymous</match>
+    <description>FTP anonymous login — T1078 Valid Accounts</description>
+    <mitre><id>T1078</id></mitre>
+    <group>ftp,authentication</group>
+  </rule>
+
+  <!-- SQL injection patterns in web logs -->
+  <rule id="100010" level="10">
+    <if_group>web_log</if_group>
+    <regex>union.*select|'.*or.*'|1=1|--\s|/\*.*\*/|xp_cmdshell</regex>
+    <description>Possible SQL injection attempt in web request — T1190</description>
+    <mitre><id>T1190</id></mitre>
+    <group>web_attack,sql_injection</group>
+  </rule>
+
+  <!-- Directory traversal -->
+  <rule id="100011" level="10">
+    <if_group>web_log</if_group>
+    <regex>\.\.\/|\.\.\\|%2e%2e%2f|%252e%252e%252f</regex>
+    <description>Directory traversal attempt detected — T1083</description>
+    <mitre><id>T1083</id></mitre>
+    <group>web_attack,directory_traversal</group>
+  </rule>
+
+  <!-- Nmap/scanner detection via multiple port connections -->
+  <rule id="100020" level="8" frequency="10" timeframe="30">
+    <if_matched_sid>110</if_matched_sid>
+    <same_source_ip/>
+    <description>Possible port scan: $(frequency) connection attempts from $(srcip)</description>
+    <mitre><id>T1046</id></mitre>
+    <group>network_scan,reconnaissance</group>
+  </rule>
+
+</group>
